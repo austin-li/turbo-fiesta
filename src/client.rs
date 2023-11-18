@@ -1,11 +1,11 @@
 // https://github.com/snapview/tungstenite-rs/blob/master/examples/client.rs
-use tungstenite::{connect, Message};
+use tungstenite::connect;
 use url::Url;
 
 fn main() {
     println!("Starting WebSocket client");
     let (mut socket, response) =
-        connect(Url::parse("ws://localhost:3012/socket").unwrap()).expect("Can't connect");
+        connect(Url::parse("ws://localhost:3000").unwrap()).expect("Can't connect");
 
     println!("Connected to the server");
     println!("Response HTTP code: {}", response.status());
@@ -13,13 +13,7 @@ fn main() {
     for (ref header, _value) in response.headers() {
         println!("* {}", header);
     }
-
-    socket
-        .send(Message::Text("Hello WebSocket".into()))
-        .unwrap();
-    loop {
-        let msg = socket.read().expect("Error reading message");
-        println!("Received: {}", msg);
-    }
+    let msg = socket.read().expect("Error reading message");
+    println!("Received: {}", msg);
     // socket.close(None);
 }
