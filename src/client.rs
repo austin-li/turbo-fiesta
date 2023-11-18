@@ -1,4 +1,5 @@
 // https://github.com/snapview/tungstenite-rs/blob/master/examples/client.rs
+
 use tungstenite::connect;
 use url::Url;
 

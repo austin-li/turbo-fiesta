@@ -9,6 +9,13 @@ edition = "2021"
 tungstenite = "0.20.1"
 url = "2.4.1"
 
+[dependencies.windows-sys]
+version = "0.52.0"
+features = [
+    "Win32_Foundation",
+    "Win32_UI_WindowsAndMessaging",
+]
+
 [[bin]]
 name = "client"
 path = "src/client.rs"
@@ -24,3 +31,7 @@ path = "src/socket_c.rs"
 [[bin]]
 name = "socket_s"
 path = "src/socket_s.rs"
+
+[[bin]]
+name = "enum"
+path = "src/enum.rs"
