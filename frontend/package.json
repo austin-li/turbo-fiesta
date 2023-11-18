@@ -6,16 +6,18 @@
   "scripts": {
     "build": "esbuild --bundle --loader:.html=file src/index.tsx --outdir=dist --minify --sourcemap",
     "clean": "rm -f dist/*.js dist/*.css dist/*.map",
-    "watch": "esbuild --bundle --loader:.html=file src/index.tsx --outdir=dist --servedir=dist --sourcemap"
+    "dev": "esbuild --bundle --loader:.html=file src/index.tsx --outdir=dist --servedir=dist --sourcemap",
+    "fmt": "prettier -w ."
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "esbuild": "^0.19.5",
+    "prettier": "^3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/react-dom": "^18.2.15"
+    "@types/react-dom": "^18.2.15",
+    "esbuild": "^0.19.5"
   }
 }
