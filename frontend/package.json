@@ -1,0 +1,21 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "esbuild --bundle --loader:.html=file src/index.tsx --outdir=dist --minify --sourcemap",
+    "clean": "rm -f dist/*.js dist/*.css dist/*.map",
+    "watch": "esbuild --bundle --loader:.html=file src/index.tsx --outdir=dist --servedir=dist --sourcemap"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "esbuild": "^0.19.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react-dom": "^18.2.15"
+  }
+}
