@@ -3,7 +3,7 @@ use tungstenite::{connect, Message};
 use url::Url;
 
 fn main() {
-	println!("Starting WebSocket client");
+    println!("Starting WebSocket client");
     let (mut socket, response) =
         connect(Url::parse("ws://localhost:3012/socket").unwrap()).expect("Can't connect");
 
@@ -14,7 +14,9 @@ fn main() {
         println!("* {}", header);
     }
 
-    socket.send(Message::Text("Hello WebSocket".into())).unwrap();
+    socket
+        .send(Message::Text("Hello WebSocket".into()))
+        .unwrap();
     loop {
         let msg = socket.read().expect("Error reading message");
         println!("Received: {}", msg);
