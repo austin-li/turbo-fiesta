@@ -12,3 +12,15 @@ url = "2.4.1"
 [[bin]]
 name = "client"
 path = "src/client.rs"
+
+[[bin]]
+name = "server"
+path = "src/server.rs"
+
+[[bin]]
+name = "socket_c"
+path = "src/socket_c.rs"
+
+[[bin]]
+name = "socket_s"
+path = "src/socket_s.rs"
