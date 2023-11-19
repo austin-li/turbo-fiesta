@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "jz+PgB5M6gBLTNecFbxdi1gUhMTleuSUDERuIwBS3elQUmB8KhwK6HvUDRFp1uxvLzzxfC7kAgSwJbLiS6h4aQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Modern 15H\\source\\repos\\austin-li\\turbo-fiesta\\sessionmgr\\sessionmgr.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Modern 15H\\.nuget\\packages\\microsoft.dotnet.ilcompiler\\8.0.0\\microsoft.dotnet.ilcompiler.8.0.0.nupkg.sha512",
+    "C:\\Users\\Modern 15H\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.0\\microsoft.net.illink.tasks.8.0.0.nupkg.sha512",
+    "C:\\Users\\Modern 15H\\.nuget\\packages\\runtime.win-x64.microsoft.dotnet.ilcompiler\\8.0.0\\runtime.win-x64.microsoft.dotnet.ilcompiler.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
