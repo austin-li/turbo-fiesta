@@ -32,13 +32,5 @@ name = "comp"
 path = "src/comp.rs"
 
 [[bin]]
-name = "socket_c"
-path = "src/socket_c.rs"
-
-[[bin]]
-name = "socket_s"
-path = "src/socket_s.rs"
-
-[[bin]]
 name = "enum"
 path = "src/enum.rs"

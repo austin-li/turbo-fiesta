@@ -211,6 +211,7 @@ class WindowInfo
     {
 
         var windows = GetWindows()
+            .Where(w => w.displayPresence != Presence.Hidden)
             .Where(w => !w.path.Contains("C:\\Windows\\System32"))
             .OrderBy(w => 1.0 - w.displayRatio)
             .DistinctBy(w => w.handle)

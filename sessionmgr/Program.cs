@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json.Nodes;
 
 class Program
 {
@@ -8,5 +9,6 @@ class Program
         var windows = WindowInfo.GetMajorWindows();
         foreach (var w in windows)
             Console.WriteLine(w);
+        
     }
 }
