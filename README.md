@@ -30,3 +30,32 @@ $ cargo run --bin server
 # Run on computer A5
 $ cargo run --bin comp A5
 ```
+
+The `server` starts two WebSocket servers:
+
+- `ws://0.0.0.0:3001/` is for the PCs to tell the server about their idle or use state and games. The payload looks like this:
+
+  ```json
+  {
+    "comp": "A5",
+    "idle": false,
+    "games": ["Discord", "Half-Life"]
+  }
+  ```
+
+- `ws://0.0.0.0:3000/` is for the server to communicate with the front-end. The payload looks like this:
+
+  ```json
+  {
+    "A5": {
+      "idle_count": 0,
+      "use_count": 101,
+      "games": ["Discord", "Half-Life"]
+    },
+    "B5": {
+      "idle_count": 0,
+      "use_count": 100,
+      "games": ["Discord", "Half-Life"]
+    }
+  }
+  ```
