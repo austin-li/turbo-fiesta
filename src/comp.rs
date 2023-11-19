@@ -1,6 +1,7 @@
 use device_query::{DeviceQuery, DeviceState, MouseState};
 use std::{env::args, thread::sleep, time::Duration};
 use tungstenite::connect;
+use turbo_fiesta::info::Info;
 use url::Url;
 
 fn main() {
@@ -18,10 +19,6 @@ fn main() {
     }
 
     println!("Connected to the server");
-    for i in 0..10 {
-        socket.send("dsfsdfa".into()).expect("send error");
-        socket.send(i.to_string().into()).expect("send error");
-    }
     let mut count = 0;
     let device_state = DeviceState::new();
     let mut prev = (0, 0);
@@ -32,8 +29,12 @@ fn main() {
             count = 0;
         }
         prev = coords;
+        let info = Info {
+            comp: name.clone(),
+            idle: count >= 10,
+        };
         socket
-            .send(format!("{name}, {count}").into())
+            .send(serde_json::to_string(&info).unwrap().into())
             .expect("send error");
         count += 1;
         sleep(Duration::from_secs(1));
