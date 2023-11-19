@@ -7,6 +7,13 @@ export type LabelBoxProps = {
   style?: CSSProperties;
 };
 
-export function LabelBox({ content, style }: LabelBoxProps) {
-  return <input className={styles.label} style={style} value={content} />;
+export function LabelBox({ content, onChange, style }: LabelBoxProps) {
+  return (
+    <input
+      className={styles.label}
+      style={style}
+      value={content}
+      onChange={(e) => onChange(e.currentTarget.value)}
+    />
+  );
 }

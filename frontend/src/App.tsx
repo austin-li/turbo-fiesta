@@ -30,9 +30,12 @@ export function App({ initComputers = [], initLabels = [] }: AppProps) {
           "--cols": cols,
         }}
       >
-        {computers.map(({ row, col, id }) => (
+        {computers.map(({ row, col, id }, i) => (
           <ComputerBox
             name={id}
+            onDrop={(row, col) =>
+              setComputers(computers.with(i, { row, col, id }))
+            }
             style={{ gridArea: `${row + 1} / ${col + 1}` }}
             key={id}
           />
