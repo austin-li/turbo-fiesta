@@ -16,22 +16,28 @@ struct ServerInfo {
 }
 fn main() {
     println!("Starting server");
-    let server = TcpListener::bind("localhost:3000").unwrap();
-    let (stream, _) = server.accept().expect("stream not accepted");
-    let mut websocket = accept(stream).expect("websocket not accepted");
-    println!("accepted");
-    let computers = TcpListener::bind("localhost:3001").unwrap();
     let comps: Arc<Mutex<HashMap<String, ServerInfo>>> = Arc::new(Mutex::new(HashMap::new()));
     let test = Arc::clone(&comps);
     spawn(move || {
-        let comps = test;
-        loop {
-            let msg = serde_json::to_string(&comps).unwrap();
-            println!("{msg}");
-            websocket.send(msg.into()).expect("send failed");
-            sleep(Duration::from_secs(1));
+        let server = TcpListener::bind("localhost:3000").unwrap();
+        for stream in server.incoming() {
+            let comps = Arc::clone(&test);
+            spawn(move || {
+                println!("accepted");
+                let mut websocket = accept(stream.unwrap()).unwrap();
+                loop {
+                    let msg = serde_json::to_string(&comps).unwrap();
+                    println!("{msg}");
+                    if let Err(_) = websocket.send(msg.into()) {
+                        break;
+                    };
+                    sleep(Duration::from_secs(1));
+                }
+            });
         }
     });
+
+    let computers = TcpListener::bind("localhost:3001").unwrap();
     for stream in computers.incoming() {
         let comps = Arc::clone(&comps);
         spawn(move || {

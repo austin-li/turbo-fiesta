@@ -1,28 +1,31 @@
 use device_query::{DeviceQuery, DeviceState, MouseState};
 use std::collections::BTreeSet;
-use std::{env::args, thread::sleep, time::Duration};
+use std::{env::args, net::TcpStream, thread::sleep, time::Duration};
 use tungstenite::connect;
+use tungstenite::{stream::MaybeTlsStream, WebSocket};
 use turbo_fiesta::info::Info;
 use url::Url;
 use windows_sys::{Win32::Foundation::*, Win32::UI::WindowsAndMessaging::*};
 
 static mut V: Vec<String> = Vec::new();
 
-fn main() {
-    let name = args().nth(1).expect("no cmd line arg");
-    println!("Starting WebSocket client");
-    let mut socket;
+fn wait_for_connection() -> WebSocket<MaybeTlsStream<TcpStream>> {
     loop {
         match connect(Url::parse("ws://localhost:3001").unwrap()) {
             Ok((s, _)) => {
-                socket = s;
-                break;
+                println!("Connected to the server");
+                return s;
             }
             Err(_) => sleep(Duration::from_secs(1)),
         }
     }
+}
 
-    println!("Connected to the server");
+fn main() {
+    let name = args().nth(1).expect("no cmd line arg");
+    println!("Starting WebSocket client");
+    let mut socket = wait_for_connection();
+
     let mut count = 0;
     let device_state = DeviceState::new();
     let mut prev = (0, 0);
@@ -65,9 +68,9 @@ fn main() {
             idle: count >= 10,
             games,
         };
-        socket
-            .send(serde_json::to_string(&info).unwrap().into())
-            .expect("send error");
+        while let Err(_) = socket.send(serde_json::to_string(&info).unwrap().into()) {
+            socket = wait_for_connection();
+        }
         println!("Sending: {info:?}");
         count += 1;
         sleep(Duration::from_secs(1));
