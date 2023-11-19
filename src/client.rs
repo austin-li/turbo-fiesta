@@ -14,7 +14,10 @@ fn main() {
     for (ref header, _value) in response.headers() {
         println!("* {}", header);
     }
-    let msg = socket.read().expect("Error reading message");
-    println!("Received: {}", msg);
+    loop {
+        let msg = socket.read().expect("Error reading message");
+        println!("Received: {}", msg);
+    }
+
     // socket.close(None);
 }
