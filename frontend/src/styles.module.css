@@ -14,14 +14,14 @@
 
 .computers {
   display: grid;
-  grid-template-rows: repeat(var(--rows), 40px);
+  grid-template-rows: repeat(var(--rows), 60px);
   grid-template-columns: repeat(var(--cols), 60px);
+  background-image: url("data:image/svg+xml,%0A%3Csvg viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0H60V60H0z' fill='none' stroke='rgba(255, 255, 255, 0.2)'/%3E%3C/svg%3E%0A");
+  background-size: 60px 60px;
   margin: 50px;
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 10px;
-  background-image: url("data:image/svg+xml,%0A%3Csvg viewBox='0 0 60 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0H60V40H0z' fill='none' stroke='rgba(255, 255, 255, 0.2)'/%3E%3C/svg%3E%0A");
-  background-size: 60px 40px;
   position: relative;
 }
 .computer,
@@ -30,6 +30,7 @@
 }
 .computer {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: rgba(255, 255, 255, 0.8);
@@ -40,6 +41,13 @@
   box-sizing: border-box;
   user-select: none;
 }
+.status {
+  font-size: 0.7em;
+  color: rgba(0, 0, 0, 0.5);
+}
+.inUse {
+  color: rgba(0, 0, 0, 0.7);
+}
 .dragging {
   position: fixed;
   background-color: rgba(255, 255, 255, 0.3);
@@ -47,17 +55,23 @@
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
   margin: 0;
   z-index: 1;
+  cursor: none;
 }
 .label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+.labelInput {
+  block-size: 40px;
+  inline-size: 0;
+  flex: auto;
   background-color: rgba(255, 255, 255, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 5px;
   color: inherit;
   font: inherit;
-  padding: 10px;
   text-align: center;
-  position: absolute;
-  inset: 0;
 
   /* https://stackoverflow.com/a/35593489 */
   &:placeholder-shown {

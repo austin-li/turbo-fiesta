@@ -11,10 +11,18 @@ type DragState = {
 export type ComputerBoxProps = {
   name: string;
   onDrop: (row: number, col: number) => void;
+  idleCount: number;
+  useCount: number;
   style?: CSSProperties;
 };
 
-export function ComputerBox({ name, onDrop, style }: ComputerBoxProps) {
+export function ComputerBox({
+  name,
+  onDrop,
+  idleCount,
+  useCount,
+  style,
+}: ComputerBoxProps) {
   const dragState = useRef<DragState | null>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -59,11 +67,17 @@ export function ComputerBox({ name, onDrop, style }: ComputerBoxProps) {
         return;
       }
       onDrop(
-        Math.floor((e.clientY - parent.top) / 40),
-        Math.floor((e.clientX - parent.left) / 60)
+        Math.floor(
+          (e.clientY - state.offsetY + state.rect.height / 2 - parent.top) / 60
+        ),
+        Math.floor(
+          (e.clientX - state.offsetX + state.rect.width / 2 - parent.left) / 60
+        )
       );
     }
   };
+
+  const inUse = useCount > 0;
 
   return (
     <div
@@ -74,7 +88,10 @@ export function ComputerBox({ name, onDrop, style }: ComputerBoxProps) {
       onPointerUp={handlePointerEnd}
       onPointerCancel={handlePointerEnd}
     >
-      {name}
+      <div className={styles.name}>{name}</div>
+      <div className={`${styles.status} ${inUse ? styles.inUse : ""}`}>
+        {inUse ? `In use (${useCount}s)` : "Idle"}
+      </div>
     </div>
   );
 }
