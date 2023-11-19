@@ -13,28 +13,29 @@ export type LabelBoxProps = {
   content: string;
   onChange: (content: string) => void;
   side: Side;
-  style?: CSSProperties;
 };
 
-export function LabelBox({
-  content,
-  onChange,
-  side,
-  style = {},
-}: LabelBoxProps) {
+export function LabelBox({ content, onChange, side }: LabelBoxProps) {
+  const vertical = side === "left" || side === "right";
   return (
-    <input
+    <div
       className={styles.label}
-      placeholder=" "
       style={{
-        ...style,
         [side]: "unset",
         [other[side]]: "100%",
-        writingMode:
-          side === "left" || side === "right" ? "vertical-rl" : "sideways-lr",
+        flexDirection: vertical ? "column" : "row",
       }}
-      value={content}
-      onChange={(e) => onChange(e.currentTarget.value)}
-    />
+    >
+      <input
+        aria-label={`Label for ${side} wall`}
+        className={styles.labelInput}
+        placeholder=" "
+        style={{
+          writingMode: vertical ? "vertical-rl" : "horizontal-tb",
+        }}
+        value={content}
+        onChange={(e) => onChange(e.currentTarget.value)}
+      />
+    </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ComputerBox } from "./components/ComputerBox";
 import styles from "./styles.module.css";
 import { Computer, Label } from "./types";
@@ -11,6 +11,10 @@ declare module "react" {
   }
 }
 
+type Message = {
+  [seat: string]: { idle_count: number; use_count: number };
+};
+
 export type AppProps = {
   initComputers?: Computer[];
 };
@@ -18,11 +22,16 @@ export function App({ initComputers = [] }: AppProps) {
   const [rows, setRows] = useState(9);
   const [cols, setCols] = useState(8);
   const [computers, setComputers] = useState(initComputers);
+  const [computerStatuses, setComputerStatuses] = useState<Message>({});
 
   const [labelTop, setLabelTop] = useState("Garage");
   const [labelBottom, setLabelBottom] = useState("Cafe");
   const [labelLeft, setLabelLeft] = useState("");
   const [labelRight, setLabelRight] = useState("");
+
+  const [wsUrl, setWsUrl] = useState(`ws://${window.location.host}/`);
+  const ws = useRef<WebSocket | null>(null);
+  const [connected, setConnected] = useState(false);
 
   return (
     <main className={styles.main}>
@@ -34,27 +43,35 @@ export function App({ initComputers = [] }: AppProps) {
           "--cols": cols,
         }}
       >
-        {computers.map(({ row, col, id }, i) => (
-          <ComputerBox
-            name={id}
-            onDrop={(newRow, newCol) => {
-              newRow = Math.min(Math.max(newRow, 0), rows - 1);
-              newCol = Math.min(Math.max(newCol, 0), cols - 1);
-              setComputers(
-                computers.map((computer, index) =>
-                  index === i
-                    ? { row: newRow, col: newCol, id }
-                    : // Swap with existing computer
-                      computer.row === newRow && computer.col === newCol
-                      ? { row, col, id: computer.id }
-                      : computer
-                )
-              );
-            }}
-            style={{ gridArea: `${row + 1} / ${col + 1}` }}
-            key={id}
-          />
-        ))}
+        {computers.map(({ row, col, id }, i) => {
+          const status = computerStatuses[id] ?? {
+            idle_count: 0,
+            use_count: 0,
+          };
+          return (
+            <ComputerBox
+              name={id}
+              onDrop={(newRow, newCol) => {
+                newRow = Math.min(Math.max(newRow, 0), rows - 1);
+                newCol = Math.min(Math.max(newCol, 0), cols - 1);
+                setComputers(
+                  computers.map((computer, index) =>
+                    index === i
+                      ? { row: newRow, col: newCol, id }
+                      : // Swap with existing computer
+                        computer.row === newRow && computer.col === newCol
+                        ? { row, col, id: computer.id }
+                        : computer
+                  )
+                );
+              }}
+              idleCount={status.idle_count}
+              useCount={status.use_count}
+              style={{ gridArea: `${row + 1} / ${col + 1}` }}
+              key={id}
+            />
+          );
+        })}
         <LabelBox content={labelTop} onChange={setLabelTop} side="top" />
         <LabelBox
           content={labelBottom}
@@ -64,6 +81,35 @@ export function App({ initComputers = [] }: AppProps) {
         <LabelBox content={labelLeft} onChange={setLabelLeft} side="left" />
         <LabelBox content={labelRight} onChange={setLabelRight} side="right" />
       </div>
+      <form
+        action="javascript:"
+        onSubmit={(e) => {
+          if (ws.current) {
+            ws.current.close();
+            setConnected(false);
+          }
+          ws.current = new WebSocket(wsUrl);
+          ws.current.addEventListener("open", () => {
+            setConnected(true);
+          });
+          ws.current.addEventListener("error", () => {
+            alert("Failed to connect");
+          });
+          ws.current.addEventListener("message", (e) => {
+            const message: Message = JSON.parse(e.data);
+            setComputerStatuses({ ...computerStatuses, ...message });
+          });
+        }}
+      >
+        <input
+          type="url"
+          value={wsUrl}
+          onChange={(e) => setWsUrl(e.currentTarget.value)}
+        />
+        <button type="submit" disabled={connected}>
+          {connected ? "Connected" : "Connect"}
+        </button>
+      </form>
     </main>
   );
 }

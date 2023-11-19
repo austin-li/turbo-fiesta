@@ -11,10 +11,18 @@ type DragState = {
 export type ComputerBoxProps = {
   name: string;
   onDrop: (row: number, col: number) => void;
+  idleCount: number;
+  useCount: number;
   style?: CSSProperties;
 };
 
-export function ComputerBox({ name, onDrop, style }: ComputerBoxProps) {
+export function ComputerBox({
+  name,
+  onDrop,
+  idleCount,
+  useCount,
+  style,
+}: ComputerBoxProps) {
   const dragState = useRef<DragState | null>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -68,6 +76,7 @@ export function ComputerBox({ name, onDrop, style }: ComputerBoxProps) {
   return (
     <div
       className={`${styles.computer} ${dragging ? styles.dragging : ""}`}
+      title={`idle count: ${idleCount}, use count: ${useCount}`}
       style={style}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
