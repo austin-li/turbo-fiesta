@@ -4,4 +4,5 @@ use serde::{Deserialize, Serialize};
 pub struct Info {
     pub comp: String,
     pub idle: bool,
+	pub game: String,
 }
