@@ -94,14 +94,21 @@ export function App({ initComputers = [] }: AppProps) {
             ws.current.close();
             setConnected(false);
           }
-          ws.current = new WebSocket(wsUrl);
-          ws.current.addEventListener("open", () => {
+          const socket = new WebSocket(wsUrl);
+          ws.current = socket;
+          socket.addEventListener("open", () => {
             setConnected(true);
           });
-          ws.current.addEventListener("error", () => {
+          socket.addEventListener("close", () => {
+            if (socket === ws.current) {
+              ws.current = null;
+            }
+            setConnected(false);
+          });
+          socket.addEventListener("error", () => {
             alert("Failed to connect");
           });
-          ws.current.addEventListener("message", (e) => {
+          socket.addEventListener("message", (e) => {
             setComputerStatuses(JSON.parse(e.data));
           });
         }}
