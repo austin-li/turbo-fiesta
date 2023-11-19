@@ -51,13 +51,16 @@ export function ComputerBox({ name, onDrop, style }: ComputerBoxProps) {
       e.currentTarget.style.width = "";
       e.currentTarget.style.height = "";
 
+      if (e.type === "pointercancel") {
+        return;
+      }
       const parent = e.currentTarget.parentElement?.getBoundingClientRect();
       if (!parent) {
         return;
       }
       onDrop(
-        Math.round((e.clientY - state.offsetY - parent.top) / 40),
-        Math.round((e.clientX - state.offsetX - parent.left) / 60)
+        Math.floor((e.clientY - parent.top) / 40),
+        Math.floor((e.clientX - parent.left) / 60)
       );
     }
   };
