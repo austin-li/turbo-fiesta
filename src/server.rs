@@ -11,8 +11,10 @@ use turbo_fiesta::info::Info;
 struct ServerInfo {
     idle_count: i32,
     use_count: i32,
+    game: String,
 }
 fn main() {
+    println!("Starting server");
     let server = TcpListener::bind("localhost:3000").unwrap();
     let (stream, _) = server.accept().expect("stream not accepted");
     let mut websocket = accept(stream).expect("websocket not accepted");
@@ -43,6 +45,7 @@ fn main() {
                         let comp = comps.entry(info.comp).or_insert(ServerInfo {
                             idle_count: 0,
                             use_count: 0,
+                            game: "Unknown".to_string(),
                         });
                         if info.idle {
                             comp.idle_count += 1;
@@ -51,6 +54,7 @@ fn main() {
                             comp.idle_count = 0;
                             comp.use_count += 1;
                         }
+                        comp.game = info.game;
                     }
                     Err(err) => {
                         println!("{err}");
