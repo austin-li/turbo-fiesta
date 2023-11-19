@@ -87,7 +87,7 @@ export function ComputerBox({
           (e.clientY - state.offsetY + state.rect.height / 2 - parent.top) / 60
         ),
         Math.floor(
-          (e.clientX - state.offsetX + state.rect.width / 2 - parent.left) / 80
+          (e.clientX - state.offsetX + state.rect.width / 2 - parent.left) / 90
         )
       );
     }

@@ -15,7 +15,7 @@
 .computers {
   display: grid;
   grid-template-rows: repeat(var(--rows), 60px);
-  grid-template-columns: repeat(var(--cols), 80px);
+  grid-template-columns: repeat(var(--cols), 90px);
   margin: 50px;
   position: relative;
 
@@ -25,8 +25,8 @@
     z-index: -1;
     display: block;
     inset: 0;
-    background-image: url("data:image/svg+xml,%0A%3Csvg viewBox='0 0 80 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0H80V60H0z' fill='none' stroke='rgba(255, 255, 255, 0.2)'/%3E%3C/svg%3E%0A");
-    background-size: 80px 60px;
+    background-image: url("data:image/svg+xml,%0A%3Csvg viewBox='0 0 90 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0H90V60H0z' fill='none' stroke='rgba(255, 255, 255, 0.2)'/%3E%3C/svg%3E%0A");
+    background-size: 90px 60px;
     background-color: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 10px;
@@ -50,6 +50,7 @@
 }
 .computer {
   flex: auto;
+  width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -72,13 +73,13 @@
 .dragging {
   position: fixed;
   z-index: 1;
-  cursor: none;
 
   .computer {
     background-color: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(5px);
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
     margin: 0;
+    cursor: none;
   }
 }
 .gamesWrapper {

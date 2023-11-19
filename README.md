@@ -45,7 +45,7 @@ The `server` starts two WebSocket servers:
   }
   ```
 
-- or this:
+  or this:
 
   ```json
   {

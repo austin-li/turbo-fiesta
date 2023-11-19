@@ -67,8 +67,15 @@ export function App({ initComputers = [] }: AppProps) {
             <ComputerBox
               name={id}
               onDrop={(newRow, newCol) => {
-                newRow = Math.min(Math.max(newRow, 0), rows - 1);
-                newCol = Math.min(Math.max(newCol, 0), cols - 1);
+                if (
+                  newRow < 0 ||
+                  newRow >= rows ||
+                  newCol < 0 ||
+                  newCol >= cols
+                ) {
+                  setComputers(computers.toSpliced(i, 1));
+                  return;
+                }
                 setComputers(
                   computers.map((computer, index) =>
                     index === i

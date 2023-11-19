@@ -72,7 +72,7 @@ fn main() {
         while let Err(_) = socket.send(serde_json::to_string(&info).unwrap().into()) {
             socket = wait_for_connection(&host);
         }
-        println!("Sending: {info:?}");
+        println!("Sending: {}", serde_json::to_string(&info).unwrap());
         count += 1;
         sleep(Duration::from_secs(1));
     }
