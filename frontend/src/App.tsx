@@ -82,8 +82,8 @@ export function App({ initComputers = [] }: AppProps) {
         <LabelBox content={labelRight} onChange={setLabelRight} side="right" />
       </div>
       <form
-        action="javascript:"
         onSubmit={(e) => {
+          e.preventDefault();
           if (ws.current) {
             ws.current.close();
             setConnected(false);

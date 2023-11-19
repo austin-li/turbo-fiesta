@@ -67,23 +67,31 @@ export function ComputerBox({
         return;
       }
       onDrop(
-        Math.floor((e.clientY - parent.top) / 40),
-        Math.floor((e.clientX - parent.left) / 60)
+        Math.floor(
+          (e.clientY - state.offsetY + state.rect.height / 2 - parent.top) / 60
+        ),
+        Math.floor(
+          (e.clientX - state.offsetX + state.rect.width / 2 - parent.left) / 60
+        )
       );
     }
   };
 
+  const inUse = useCount > 0;
+
   return (
     <div
       className={`${styles.computer} ${dragging ? styles.dragging : ""}`}
-      title={`idle count: ${idleCount}, use count: ${useCount}`}
       style={style}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerEnd}
       onPointerCancel={handlePointerEnd}
     >
-      {name}
+      <div className={styles.name}>{name}</div>
+      <div className={`${styles.status} ${inUse ? styles.inUse : ""}`}>
+        {inUse ? `In use (${useCount}s)` : "Idle"}
+      </div>
     </div>
   );
 }
