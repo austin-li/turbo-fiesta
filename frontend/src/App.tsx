@@ -4,6 +4,13 @@ import styles from "./styles.module.css";
 import { Computer, Label } from "./types";
 import { LabelBox } from "./components/LabelBox";
 
+// https://stackoverflow.com/a/70398145
+declare module "react" {
+  interface CSSProperties {
+    [key: `--${string}`]: string | number;
+  }
+}
+
 export type AppProps = {
   initComputers?: Computer[];
   initLabels?: Label[];
@@ -19,8 +26,8 @@ export function App({ initComputers = [], initLabels = [] }: AppProps) {
       <div
         className={styles.computers}
         style={{
-          gridTemplateRows: `repeat(${rows}, 1fr)`,
-          gridTemplateColumns: `repeat(${cols}, 1fr)`,
+          "--rows": rows,
+          "--cols": cols,
         }}
       >
         {computers.map(({ row, col, id }) => (
@@ -33,6 +40,11 @@ export function App({ initComputers = [], initLabels = [] }: AppProps) {
         {labels.map(({ content, rowStart, rowEnd, colStart, colEnd }, i) => (
           <LabelBox
             content={content}
+            onChange={(content) =>
+              setLabels(
+                labels.with(i, { content, rowStart, rowEnd, colStart, colEnd })
+              )
+            }
             style={{
               gridArea: `${rowStart + 1} / ${colStart + 1} / ${rowEnd + 1} / ${
                 colEnd + 1

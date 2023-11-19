@@ -6,4 +6,11 @@ body,
 body {
   font-family: "Inter", sans-serif;
   margin: 0;
+  background-image: linear-gradient(in lab 2deg, #93b6fd, #fd8bd6);
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

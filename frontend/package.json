@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "esbuild --bundle --loader:.html=file src/index.tsx --outdir=dist --minify --sourcemap",
+    "build": "esbuild --bundle --loader:.html=file src/index.tsx --outdir=dist --supported:nesting=false --minify --sourcemap",
     "clean": "rm -f dist/*.js dist/*.css dist/*.map",
     "dev": "esbuild --bundle --loader:.html=file src/index.tsx --outdir=dist --servedir=dist --sourcemap",
     "fmt": "prettier -w ."
