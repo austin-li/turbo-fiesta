@@ -1,5 +1,7 @@
 # turbo-fiesta
 
+![Nortion Approved Safe Verified](./docs/notion-safe.png)
+
 ![prompt](./docs/prompt.jpg)
 
 ![Architectural diagram](./docs/architectural-diagram.png)

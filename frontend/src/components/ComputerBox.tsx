@@ -17,14 +17,27 @@ export type ComputerBoxProps = {
   name: string;
   onDrop: (row: number, col: number) => void;
   status: Status;
+  games: string[];
   style?: CSSProperties;
 };
 
-export function ComputerBox({ name, onDrop, status, style }: ComputerBoxProps) {
+export function ComputerBox({
+  name,
+  onDrop,
+  status,
+  games,
+  style,
+}: ComputerBoxProps) {
   const dragState = useRef<DragState | null>(null);
   const [dragging, setDragging] = useState(false);
 
   const handlePointerDown = (e: PointerEvent<HTMLDivElement>) => {
+    if (
+      e.target instanceof Element &&
+      e.target.closest(`.${styles.gamesWrapper}`)
+    ) {
+      return;
+    }
     if (!dragState.current) {
       const rect = e.currentTarget.getBoundingClientRect();
       dragState.current = {
@@ -96,6 +109,18 @@ export function ComputerBox({ name, onDrop, status, style }: ComputerBoxProps) {
             ? `Idle (${status.time}s)`
             : "Offline"}
       </div>
+      {games.length > 0 && (
+        <div className={styles.gamesWrapper}>
+          <div className={styles.games}>
+            <h2 className={styles.gamesHeading}>Games</h2>
+            {games.map((game) => (
+              <div className={styles.game} key={game}>
+                {game}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -16,13 +16,22 @@
   display: grid;
   grid-template-rows: repeat(var(--rows), 60px);
   grid-template-columns: repeat(var(--cols), 80px);
-  background-image: url("data:image/svg+xml,%0A%3Csvg viewBox='0 0 80 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0H80V60H0z' fill='none' stroke='rgba(255, 255, 255, 0.2)'/%3E%3C/svg%3E%0A");
-  background-size: 80px 60px;
   margin: 50px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 10px;
   position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    display: block;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%0A%3Csvg viewBox='0 0 80 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0H80V60H0z' fill='none' stroke='rgba(255, 255, 255, 0.2)'/%3E%3C/svg%3E%0A");
+    background-size: 80px 60px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+  }
 }
 .computer,
 .label {
@@ -40,6 +49,7 @@
   touch-action: none;
   box-sizing: border-box;
   user-select: none;
+  position: relative;
 }
 .status {
   font-size: 0.7em;
@@ -53,10 +63,45 @@
   position: fixed;
   background-color: rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(5px);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
   margin: 0;
   z-index: 1;
   cursor: none;
+}
+.gamesWrapper {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.2s;
+  padding: 10px;
+  cursor: default;
+}
+.computer:not(.dragging):hover .gamesWrapper {
+  visibility: visible;
+  transform: translateX(-50%);
+  opacity: 1;
+}
+.games {
+  white-space: pre;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(5px);
+  padding: 5px 10px;
+  gap: 5px;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8em;
+  border-radius: 5px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+.gamesHeading {
+  text-transform: uppercase;
+  margin: 0;
+  font-size: 0.8em;
 }
 .label {
   position: absolute;
@@ -67,17 +112,18 @@
   block-size: 40px;
   inline-size: 0;
   flex: auto;
-  background-color: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: none;
+  border: 1px solid transparent;
   border-radius: 5px;
   color: inherit;
   font: inherit;
   text-align: center;
 
   /* https://stackoverflow.com/a/35593489 */
-  &:placeholder-shown {
-    border-color: transparent;
-    background-color: transparent;
+  &:not(:placeholder-shown) {
+    border-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
   }
 
   &:hover,

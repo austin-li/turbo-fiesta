@@ -15,7 +15,7 @@ type Message = {
   [seat: string]: {
     idle_count: number;
     use_count: number;
-    game: string[];
+    games: string[];
   };
 };
 
@@ -87,6 +87,7 @@ export function App({ initComputers = [] }: AppProps) {
                     : { type: "used", time: status.use_count }
                   : { type: "offline" }
               }
+              games={status?.games ?? []}
               style={{ gridArea: `${row + 1} / ${col + 1}` }}
               key={id}
             />

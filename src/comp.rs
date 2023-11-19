@@ -9,9 +9,9 @@ use windows_sys::{Win32::Foundation::*, Win32::UI::WindowsAndMessaging::*};
 
 static mut V: Vec<String> = Vec::new();
 
-fn wait_for_connection() -> WebSocket<MaybeTlsStream<TcpStream>> {
+fn wait_for_connection(host: &str) -> WebSocket<MaybeTlsStream<TcpStream>> {
     loop {
-        match connect(Url::parse("ws://localhost:3001").unwrap()) {
+        match connect(Url::parse(host).unwrap()) {
             Ok((s, _)) => {
                 println!("Connected to the server");
                 return s;
@@ -24,7 +24,8 @@ fn wait_for_connection() -> WebSocket<MaybeTlsStream<TcpStream>> {
 fn main() {
     let name = args().nth(1).expect("no cmd line arg");
     println!("Starting WebSocket client");
-    let mut socket = wait_for_connection();
+    let host = args().nth(2).unwrap_or(String::from("ws://localhost:3001"));
+    let mut socket = wait_for_connection(&host);
 
     let mut count = 0;
     let device_state = DeviceState::new();
@@ -69,7 +70,7 @@ fn main() {
             games,
         };
         while let Err(_) = socket.send(serde_json::to_string(&info).unwrap().into()) {
-            socket = wait_for_connection();
+            socket = wait_for_connection(&host);
         }
         println!("Sending: {info:?}");
         count += 1;
