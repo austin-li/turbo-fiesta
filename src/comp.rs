@@ -3,7 +3,7 @@ use std::collections::BTreeSet;
 use std::{env::args, net::TcpStream, thread::sleep, time::Duration};
 use tungstenite::connect;
 use tungstenite::{stream::MaybeTlsStream, WebSocket};
-use turbo_fiesta::info::Info;
+use turbo_fiesta::info::ClientInfo;
 use url::Url;
 use windows_sys::{Win32::Foundation::*, Win32::UI::WindowsAndMessaging::*};
 
@@ -64,7 +64,7 @@ fn main() {
             }
             V.clear();
         }
-        let info = Info {
+        let info = ClientInfo::RustInfo {
             comp: name.clone(),
             idle: count >= 10,
             games,
