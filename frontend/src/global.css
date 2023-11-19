@@ -14,3 +14,15 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+#title {
+  font-weight: bold;
+  margin: 0;
+  position: fixed;
+  z-index: -1;
+  left: 0;
+  bottom: -20px;
+  font-size: 200px;
+  line-height: 0.8;
+  color: rgba(255, 255, 255, 0.1);
+}

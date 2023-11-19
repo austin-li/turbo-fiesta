@@ -26,6 +26,7 @@ export function App({ initComputers = [] }: AppProps) {
 
   return (
     <main className={styles.main}>
+      <h2 className={styles.heading}>Manage layout</h2>
       <div
         className={styles.computers}
         style={{
