@@ -13,13 +13,16 @@ declare module "react" {
 
 export type AppProps = {
   initComputers?: Computer[];
-  initLabels?: Label[];
 };
-export function App({ initComputers = [], initLabels = [] }: AppProps) {
-  const [rows, setRows] = useState(11);
+export function App({ initComputers = [] }: AppProps) {
+  const [rows, setRows] = useState(9);
   const [cols, setCols] = useState(8);
   const [computers, setComputers] = useState(initComputers);
-  const [labels, setLabels] = useState(initLabels);
+
+  const [labelTop, setLabelTop] = useState("Garage");
+  const [labelBottom, setLabelBottom] = useState("Cafe");
+  const [labelLeft, setLabelLeft] = useState("");
+  const [labelRight, setLabelRight] = useState("");
 
   return (
     <main className={styles.main}>
@@ -51,22 +54,14 @@ export function App({ initComputers = [], initLabels = [] }: AppProps) {
             key={id}
           />
         ))}
-        {labels.map(({ content, rowStart, rowEnd, colStart, colEnd }, i) => (
-          <LabelBox
-            content={content}
-            onChange={(content) =>
-              setLabels(
-                labels.with(i, { content, rowStart, rowEnd, colStart, colEnd })
-              )
-            }
-            style={{
-              gridArea: `${rowStart + 1} / ${colStart + 1} / ${rowEnd + 1} / ${
-                colEnd + 1
-              }`,
-            }}
-            key={i}
-          />
-        ))}
+        <LabelBox content={labelTop} onChange={setLabelTop} side="top" />
+        <LabelBox
+          content={labelBottom}
+          onChange={setLabelBottom}
+          side="bottom"
+        />
+        <LabelBox content={labelLeft} onChange={setLabelLeft} side="left" />
+        <LabelBox content={labelRight} onChange={setLabelRight} side="right" />
       </div>
     </main>
   );

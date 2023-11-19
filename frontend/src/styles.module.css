@@ -6,9 +6,9 @@
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 10px;
-  overflow: hidden;
   background-image: url("data:image/svg+xml,%0A%3Csvg viewBox='0 0 60 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0H60V40H0z' fill='none' stroke='rgba(255, 255, 255, 0.2)'/%3E%3C/svg%3E%0A");
   background-size: 60px 40px;
+  position: relative;
 }
 .computer,
 .label {
@@ -40,6 +40,14 @@
   font: inherit;
   padding: 10px;
   text-align: center;
+  position: absolute;
+  inset: 0;
+
+  /* https://stackoverflow.com/a/35593489 */
+  &:placeholder-shown {
+    border-color: transparent;
+    background-color: transparent;
+  }
 
   &:hover,
   &:focus {
