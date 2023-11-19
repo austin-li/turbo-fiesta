@@ -19,7 +19,7 @@ fn main() {
     let comps: Arc<Mutex<HashMap<String, ServerInfo>>> = Arc::new(Mutex::new(HashMap::new()));
     let test = Arc::clone(&comps);
     spawn(move || {
-        let server = TcpListener::bind("localhost:3000").unwrap();
+        let server = TcpListener::bind("0.0.0.0:3000").unwrap();
         for stream in server.incoming() {
             let comps = Arc::clone(&test);
             spawn(move || {
@@ -37,7 +37,7 @@ fn main() {
         }
     });
 
-    let computers = TcpListener::bind("localhost:3001").unwrap();
+    let computers = TcpListener::bind("0.0.0.0:3001").unwrap();
     for stream in computers.incoming() {
         let comps = Arc::clone(&comps);
         spawn(move || {

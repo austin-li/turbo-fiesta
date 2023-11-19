@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ComputerBox } from "./components/ComputerBox";
 import styles from "./styles.module.css";
 import { Computer, Label } from "./types";
@@ -15,9 +15,11 @@ type Message = {
   [seat: string]: {
     idle_count: number;
     use_count: number;
-    game: string;
+    game: string[];
   };
 };
+
+const WS_URL = `ws://${window.location.hostname}:3000/`;
 
 export type AppProps = {
   initComputers?: Computer[];
@@ -33,9 +35,21 @@ export function App({ initComputers = [] }: AppProps) {
   const [labelLeft, setLabelLeft] = useState("");
   const [labelRight, setLabelRight] = useState("");
 
-  const [wsUrl, setWsUrl] = useState(`ws://localhost:3000/`);
-  const ws = useRef<WebSocket | null>(null);
-  const [connected, setConnected] = useState(false);
+  useEffect(() => {
+    let ws: WebSocket;
+    function connect() {
+      ws = new WebSocket(WS_URL);
+      ws.addEventListener("message", (e) => {
+        setComputerStatuses(JSON.parse(e.data));
+      });
+      ws.addEventListener("close", connect);
+    }
+    connect();
+    return () => {
+      ws.removeEventListener("close", connect);
+      ws.close();
+    };
+  }, []);
 
   return (
     <main className={styles.main}>
@@ -87,41 +101,6 @@ export function App({ initComputers = [] }: AppProps) {
         <LabelBox content={labelLeft} onChange={setLabelLeft} side="left" />
         <LabelBox content={labelRight} onChange={setLabelRight} side="right" />
       </div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (ws.current) {
-            ws.current.close();
-            setConnected(false);
-          }
-          const socket = new WebSocket(wsUrl);
-          ws.current = socket;
-          socket.addEventListener("open", () => {
-            setConnected(true);
-          });
-          socket.addEventListener("close", () => {
-            if (socket === ws.current) {
-              ws.current = null;
-            }
-            setConnected(false);
-          });
-          socket.addEventListener("error", () => {
-            alert("Failed to connect");
-          });
-          socket.addEventListener("message", (e) => {
-            setComputerStatuses(JSON.parse(e.data));
-          });
-        }}
-      >
-        <input
-          type="url"
-          value={wsUrl}
-          onChange={(e) => setWsUrl(e.currentTarget.value)}
-        />
-        <button type="submit" disabled={connected}>
-          {connected ? "Connected" : "Connect"}
-        </button>
-      </form>
     </main>
   );
 }
