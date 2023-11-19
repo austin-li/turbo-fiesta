@@ -33,9 +33,20 @@ export function App({ initComputers = [], initLabels = [] }: AppProps) {
         {computers.map(({ row, col, id }, i) => (
           <ComputerBox
             name={id}
-            onDrop={(row, col) =>
-              setComputers(computers.with(i, { row, col, id }))
-            }
+            onDrop={(newRow, newCol) => {
+              newRow = Math.min(Math.max(newRow, 0), rows - 1);
+              newCol = Math.min(Math.max(newCol, 0), cols - 1);
+              setComputers(
+                computers.map((computer, index) =>
+                  index === i
+                    ? { row: newRow, col: newCol, id }
+                    : // Swap with existing computer
+                      computer.row === newRow && computer.col === newCol
+                      ? { row, col, id: computer.id }
+                      : computer
+                )
+              );
+            }}
             style={{ gridArea: `${row + 1} / ${col + 1}` }}
             key={id}
           />
