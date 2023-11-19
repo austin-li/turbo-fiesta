@@ -12,7 +12,11 @@ declare module "react" {
 }
 
 type Message = {
-  [seat: string]: { idle_count: number; use_count: number };
+  [seat: string]: {
+    idle_count: number;
+    use_count: number;
+    game: string;
+  };
 };
 
 export type AppProps = {
@@ -29,7 +33,7 @@ export function App({ initComputers = [] }: AppProps) {
   const [labelLeft, setLabelLeft] = useState("");
   const [labelRight, setLabelRight] = useState("");
 
-  const [wsUrl, setWsUrl] = useState(`ws://${window.location.host}/`);
+  const [wsUrl, setWsUrl] = useState(`ws://localhost:3000/`);
   const ws = useRef<WebSocket | null>(null);
   const [connected, setConnected] = useState(false);
 
@@ -44,10 +48,7 @@ export function App({ initComputers = [] }: AppProps) {
         }}
       >
         {computers.map(({ row, col, id }, i) => {
-          const status = computerStatuses[id] ?? {
-            idle_count: 0,
-            use_count: 0,
-          };
+          const status = computerStatuses[id];
           return (
             <ComputerBox
               name={id}
@@ -65,8 +66,13 @@ export function App({ initComputers = [] }: AppProps) {
                   )
                 );
               }}
-              idleCount={status.idle_count}
-              useCount={status.use_count}
+              status={
+                status
+                  ? status.idle_count > 0
+                    ? { type: "idle", time: status.idle_count }
+                    : { type: "used", time: status.use_count }
+                  : { type: "offline" }
+              }
               style={{ gridArea: `${row + 1} / ${col + 1}` }}
               key={id}
             />
@@ -96,8 +102,7 @@ export function App({ initComputers = [] }: AppProps) {
             alert("Failed to connect");
           });
           ws.current.addEventListener("message", (e) => {
-            const message: Message = JSON.parse(e.data);
-            setComputerStatuses({ ...computerStatuses, ...message });
+            setComputerStatuses(JSON.parse(e.data));
           });
         }}
       >

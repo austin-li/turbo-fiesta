@@ -1,6 +1,11 @@
 import { CSSProperties, PointerEvent, useRef, useState } from "react";
 import styles from "../styles.module.css";
 
+export type Status =
+  | { type: "offline" }
+  | { type: "idle"; time: number }
+  | { type: "used"; time: number };
+
 type DragState = {
   pointerId: number;
   rect: DOMRect;
@@ -11,18 +16,11 @@ type DragState = {
 export type ComputerBoxProps = {
   name: string;
   onDrop: (row: number, col: number) => void;
-  idleCount: number;
-  useCount: number;
+  status: Status;
   style?: CSSProperties;
 };
 
-export function ComputerBox({
-  name,
-  onDrop,
-  idleCount,
-  useCount,
-  style,
-}: ComputerBoxProps) {
+export function ComputerBox({ name, onDrop, status, style }: ComputerBoxProps) {
   const dragState = useRef<DragState | null>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -71,13 +69,11 @@ export function ComputerBox({
           (e.clientY - state.offsetY + state.rect.height / 2 - parent.top) / 60
         ),
         Math.floor(
-          (e.clientX - state.offsetX + state.rect.width / 2 - parent.left) / 60
+          (e.clientX - state.offsetX + state.rect.width / 2 - parent.left) / 80
         )
       );
     }
   };
-
-  const inUse = useCount > 0;
 
   return (
     <div
@@ -89,8 +85,16 @@ export function ComputerBox({
       onPointerCancel={handlePointerEnd}
     >
       <div className={styles.name}>{name}</div>
-      <div className={`${styles.status} ${inUse ? styles.inUse : ""}`}>
-        {inUse ? `In use (${useCount}s)` : "Idle"}
+      <div
+        className={`${styles.status} ${
+          status.type === "used" ? styles.inUse : ""
+        }`}
+      >
+        {status.type === "used"
+          ? `In use (${status.time}s)`
+          : status.type === "idle"
+            ? `Idle (${status.time}s)`
+            : "Offline"}
       </div>
     </div>
   );
