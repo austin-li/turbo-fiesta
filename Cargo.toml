@@ -12,6 +12,9 @@ url = "2.4.1"
 tokio = { version = "1", features = ["full"] }
 warp = "0.3"
 tokio-stream = { version = "0.1.1", features = ["net"] }
+futures-util = { version = "0.3", default-features = false, features = [
+  "sink",
+] }
 
 [dependencies.windows-sys]
 version = "0.52.0"
