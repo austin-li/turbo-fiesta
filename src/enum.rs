@@ -10,15 +10,14 @@ fn main() {
     }
 }
 
-extern "system" fn enum_window(window: HWND, _: LPARAM) ->BOOL {
+extern "system" fn enum_window(window: HWND, _: LPARAM) -> BOOL {
     unsafe {
         let mut text: [u16; 512] = [0; 512];
         let len = GetWindowTextW(window, text.as_mut_ptr(), text.len() as i32);
         let text = String::from_utf16_lossy(&text[..len as usize]);
 
         if !text.is_empty() {
-            V.push(text.clone());
-            println!("{text}");
+            V.push(text);
         }
 
         1

@@ -1,4 +1,5 @@
 use serde::Serialize;
+use std::collections::BTreeSet;
 use std::collections::HashMap;
 use std::net::TcpListener;
 use std::sync::{Arc, Mutex};
@@ -11,7 +12,7 @@ use turbo_fiesta::info::Info;
 struct ServerInfo {
     idle_count: i32,
     use_count: i32,
-    game: String,
+    games: BTreeSet<String>,
 }
 fn main() {
     println!("Starting server");
@@ -40,12 +41,11 @@ fn main() {
                 match websocket.read() {
                     Ok(msg) => {
                         let info: Info = serde_json::from_str(&msg.to_string()).unwrap();
-                        println!("{info:?}");
                         let mut comps = comps.lock().unwrap();
                         let comp = comps.entry(info.comp).or_insert(ServerInfo {
                             idle_count: 0,
                             use_count: 0,
-                            game: "Unknown".to_string(),
+                            games: BTreeSet::new(),
                         });
                         if info.idle {
                             comp.idle_count += 1;
@@ -54,7 +54,7 @@ fn main() {
                             comp.idle_count = 0;
                             comp.use_count += 1;
                         }
-                        comp.game = info.game;
+                        comp.games = info.games;
                     }
                     Err(err) => {
                         println!("{err}");
