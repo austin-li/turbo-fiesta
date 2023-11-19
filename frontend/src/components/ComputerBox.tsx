@@ -32,12 +32,6 @@ export function ComputerBox({
   const [dragging, setDragging] = useState(false);
 
   const handlePointerDown = (e: PointerEvent<HTMLDivElement>) => {
-    if (
-      e.target instanceof Element &&
-      e.target.closest(`.${styles.gamesWrapper}`)
-    ) {
-      return;
-    }
     if (!dragState.current) {
       const rect = e.currentTarget.getBoundingClientRect();
       dragState.current = {
@@ -54,26 +48,37 @@ export function ComputerBox({
     handlePointerMove(e);
   };
   const handlePointerMove = (e: PointerEvent<HTMLDivElement>) => {
+    if (!e.currentTarget.parentElement) {
+      return;
+    }
     if (dragState.current?.pointerId === e.pointerId) {
-      e.currentTarget.style.left = `${e.clientX - dragState.current.offsetX}px`;
-      e.currentTarget.style.top = `${e.clientY - dragState.current.offsetY}px`;
+      e.currentTarget.parentElement.style.left = `${
+        e.clientX - dragState.current.offsetX
+      }px`;
+      e.currentTarget.parentElement.style.top = `${
+        e.clientY - dragState.current.offsetY
+      }px`;
     }
   };
   const handlePointerEnd = (e: PointerEvent<HTMLDivElement>) => {
+    if (!e.currentTarget.parentElement) {
+      return;
+    }
     const state = dragState.current;
     if (state?.pointerId === e.pointerId) {
       dragState.current = null;
       setDragging(false);
 
-      e.currentTarget.style.left = "";
-      e.currentTarget.style.top = "";
+      e.currentTarget.parentElement.style.left = "";
+      e.currentTarget.parentElement.style.top = "";
       e.currentTarget.style.width = "";
       e.currentTarget.style.height = "";
 
       if (e.type === "pointercancel") {
         return;
       }
-      const parent = e.currentTarget.parentElement?.getBoundingClientRect();
+      const parent =
+        e.currentTarget.parentElement.parentElement?.getBoundingClientRect();
       if (!parent) {
         return;
       }
@@ -90,24 +95,28 @@ export function ComputerBox({
 
   return (
     <div
-      className={`${styles.computer} ${dragging ? styles.dragging : ""}`}
+      className={`${styles.computerWrapper} ${dragging ? styles.dragging : ""}`}
       style={style}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerEnd}
-      onPointerCancel={handlePointerEnd}
     >
-      <div className={styles.name}>{name}</div>
       <div
-        className={`${styles.status} ${
-          status.type === "used" ? styles.inUse : ""
-        }`}
+        className={styles.computer}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerEnd}
+        onPointerCancel={handlePointerEnd}
       >
-        {status.type === "used"
-          ? `In use (${status.time}s)`
-          : status.type === "idle"
-            ? `Idle (${status.time}s)`
-            : "Offline"}
+        <div className={styles.name}>{name}</div>
+        <div
+          className={`${styles.status} ${
+            status.type === "used" ? styles.inUse : ""
+          }`}
+        >
+          {status.type === "used"
+            ? `In use (${status.time}s)`
+            : status.type === "idle"
+              ? `Idle (${status.time}s)`
+              : "Offline"}
+        </div>
       </div>
       {games.length > 0 && (
         <div className={styles.gamesWrapper}>

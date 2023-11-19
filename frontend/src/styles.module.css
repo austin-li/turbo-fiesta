@@ -37,7 +37,19 @@
 .label {
   margin: 5px;
 }
+.computerWrapper {
+  display: flex;
+  position: relative;
+  user-select: none;
+  transition: z-index 0 0.2s;
+
+  &:hover {
+    z-index: 1;
+    transition: none;
+  }
+}
 .computer {
+  flex: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -48,8 +60,6 @@
   cursor: grab;
   touch-action: none;
   box-sizing: border-box;
-  user-select: none;
-  position: relative;
 }
 .status {
   font-size: 0.7em;
@@ -61,12 +71,15 @@
 }
 .dragging {
   position: fixed;
-  background-color: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(5px);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-  margin: 0;
   z-index: 1;
   cursor: none;
+
+  .computer {
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    margin: 0;
+  }
 }
 .gamesWrapper {
   position: absolute;
@@ -76,10 +89,10 @@
   visibility: hidden;
   opacity: 0;
   transition: all 0.2s;
-  padding: 10px;
+  padding: 5px;
   cursor: default;
 }
-.computer:not(.dragging):hover .gamesWrapper {
+.computerWrapper:not(.dragging):hover .gamesWrapper {
   visibility: visible;
   transform: translateX(-50%);
   opacity: 1;
