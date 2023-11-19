@@ -1,8 +1,22 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.heading {
+  margin: 0;
+  text-align: center;
+  color: white;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+  font-size: 30px;
+}
+
 .computers {
   display: grid;
   grid-template-rows: repeat(var(--rows), 40px);
   grid-template-columns: repeat(var(--cols), 60px);
-  margin: 40px;
+  margin: 50px;
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 10px;
