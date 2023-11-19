@@ -1,6 +1,8 @@
 use device_query::{DeviceQuery, DeviceState, MouseState};
+use std::collections::BTreeSet;
 use std::{env::args, net::TcpStream, thread::sleep, time::Duration};
-use tungstenite::{connect, stream::MaybeTlsStream, WebSocket};
+use tungstenite::connect;
+use tungstenite::{stream::MaybeTlsStream, WebSocket};
 use turbo_fiesta::info::Info;
 use url::Url;
 use windows_sys::{Win32::Foundation::*, Win32::UI::WindowsAndMessaging::*};
@@ -36,12 +38,27 @@ fn main() {
         }
         prev = coords;
         // enum windows
-        let mut game = "Unknown";
+        let mut games = BTreeSet::new();
         unsafe {
             EnumWindows(Some(enum_window), 0);
             for title in V.iter() {
+                if title == "BloonsTD6" {
+                    games.insert("Bloons Tower Defense 6".to_string());
+                }
+                if title.starts_with("Terraria: ") {
+                    games.insert("Terraria".to_string());
+                }
+                if title == "Risk of Rain Returns" {
+                    games.insert("Risk of Rain Returns".to_string());
+                }
+                if title == "Half-Life" {
+                    games.insert("Half-Life".to_string());
+                }
+                if title == "League of Legends" {
+                    games.insert("League of Legends".to_string());
+                }
                 if title.ends_with("Discord") {
-                    game = "Discord";
+                    games.insert("Discord".to_string());
                 }
             }
             V.clear();
@@ -49,7 +66,7 @@ fn main() {
         let info = Info {
             comp: name.clone(),
             idle: count >= 10,
-            game: game.to_string(),
+            games,
         };
         while let Err(_) = socket.send(serde_json::to_string(&info).unwrap().into()) {
             socket = wait_for_connection();
@@ -68,8 +85,7 @@ extern "system" fn enum_window(window: HWND, _: LPARAM) -> BOOL {
         let text = String::from_utf16_lossy(&text[..len as usize]);
 
         if !text.is_empty() {
-            V.push(text.clone());
-            //println!("{text}");
+            V.push(text);
         }
 
         1
