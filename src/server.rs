@@ -6,13 +6,14 @@ use std::sync::{Arc, Mutex};
 use std::thread::{sleep, spawn};
 use std::time::Duration;
 use tungstenite::accept;
-use turbo_fiesta::info::Info;
+use turbo_fiesta::info::{ClientInfo, ClientInfo::*};
 
 #[derive(Serialize, Debug)]
 struct ServerInfo {
     idle_count: i32,
     use_count: i32,
     games: BTreeSet<String>,
+    response: String,
 }
 fn main() {
     println!("Starting server");
@@ -46,21 +47,35 @@ fn main() {
             loop {
                 match websocket.read() {
                     Ok(msg) => {
-                        let info: Info = serde_json::from_str(&msg.to_string()).unwrap();
+                        let info: ClientInfo = serde_json::from_str(&msg.to_string()).unwrap();
                         let mut comps = comps.lock().unwrap();
-                        let comp = comps.entry(info.comp).or_insert(ServerInfo {
-                            idle_count: 0,
-                            use_count: 0,
-                            games: BTreeSet::new(),
-                        });
-                        if info.idle {
-                            comp.idle_count += 1;
-                            comp.use_count = 0;
-                        } else {
-                            comp.idle_count = 0;
-                            comp.use_count += 1;
+                        match info {
+                            RustInfo { comp, idle, games } => {
+                                let comp = comps.entry(comp).or_insert(ServerInfo {
+                                    idle_count: 0,
+                                    use_count: 0,
+                                    games: BTreeSet::new(),
+                                    response: "".to_string(),
+                                });
+                                if idle {
+                                    comp.idle_count += 1;
+                                    comp.use_count = 0;
+                                } else {
+                                    comp.idle_count = 0;
+                                    comp.use_count += 1;
+                                }
+                                comp.games = games;
+                            }
+                            CsInfo { comp, response } => {
+                                let comp = comps.entry(comp).or_insert(ServerInfo {
+                                    idle_count: 0,
+                                    use_count: 0,
+                                    games: BTreeSet::new(),
+                                    response: "".to_string(),
+                                });
+                                comp.response = response;
+                            }
                         }
-                        comp.games = info.games;
                     }
                     Err(err) => {
                         println!("{err}");

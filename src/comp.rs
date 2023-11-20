@@ -3,7 +3,7 @@ use std::collections::BTreeSet;
 use std::{env::args, net::TcpStream, thread::sleep, time::Duration};
 use tungstenite::connect;
 use tungstenite::{stream::MaybeTlsStream, WebSocket};
-use turbo_fiesta::info::Info;
+use turbo_fiesta::info::ClientInfo;
 use url::Url;
 use windows_sys::{Win32::Foundation::*, Win32::UI::WindowsAndMessaging::*};
 
@@ -64,7 +64,7 @@ fn main() {
             }
             V.clear();
         }
-        let info = Info {
+        let info = ClientInfo::RustInfo {
             comp: name.clone(),
             idle: count >= 10,
             games,
@@ -72,7 +72,7 @@ fn main() {
         while let Err(_) = socket.send(serde_json::to_string(&info).unwrap().into()) {
             socket = wait_for_connection(&host);
         }
-        println!("Sending: {info:?}");
+        println!("Sending: {}", serde_json::to_string(&info).unwrap());
         count += 1;
         sleep(Duration::from_secs(1));
     }
