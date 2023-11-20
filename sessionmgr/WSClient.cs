@@ -22,7 +22,12 @@ class WSClient
     public class TransferrableState
     {
         public string comp { get; set; }
-        public string summary { get; set; }
+        public string response { get; set; }
+    }
+
+        public class StateWrapper
+    {
+        public TransferrableState CsInfo { get; set; }
     }
 
     public string MakeJson(string comp, string summary)
@@ -30,10 +35,10 @@ class WSClient
         var state = new TransferrableState
         {
             comp = comp,
-            summary = summary
+            response = summary
         };
 
-        return JsonSerializer.Serialize<TransferrableState>(state);
+        return JsonSerializer.Serialize<StateWrapper>(new StateWrapper {CsInfo = state});
     }
 
     public ReadOnlyMemory<byte> MakeTransitBuffer(string json)
