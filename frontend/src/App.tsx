@@ -16,6 +16,7 @@ type ComputersMessage = {
     idle_count: number;
     use_count: number;
     games: string[];
+    response: string;
   };
 };
 type Message = {
@@ -105,6 +106,8 @@ export function App({ initComputers = [] }: AppProps) {
                   : { type: "offline" }
               }
               games={status?.games ?? []}
+              isBad={!!status?.response.includes("<PROHIBITED>")}
+              summary={status?.response.replace(/ *<[A-Z]+>/g, "") || undefined}
               style={{ gridArea: `${row + 1} / ${col + 1}` }}
               key={id}
             />

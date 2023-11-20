@@ -18,6 +18,8 @@ export type ComputerBoxProps = {
   onDrop: (row: number, col: number) => void;
   status: Status;
   games: string[];
+  isBad: boolean;
+  summary?: string;
   style?: CSSProperties;
 };
 
@@ -26,6 +28,8 @@ export function ComputerBox({
   onDrop,
   status,
   games,
+  isBad,
+  summary,
   style,
 }: ComputerBoxProps) {
   const dragState = useRef<DragState | null>(null);
@@ -117,9 +121,10 @@ export function ComputerBox({
               ? `Idle (${status.time}s)`
               : "Offline"}
         </div>
+        {isBad && <span className={styles.bad}>⚠️</span>}
       </div>
       {games.length > 0 && (
-        <div className={styles.gamesWrapper}>
+        <div className={`${styles.popup} ${styles.gamesWrapper}`}>
           <div className={styles.games}>
             <h2 className={styles.gamesHeading}>Games</h2>
             {games.map((game) => (
@@ -128,6 +133,11 @@ export function ComputerBox({
               </div>
             ))}
           </div>
+        </div>
+      )}
+      {summary !== undefined && (
+        <div className={`${styles.popup} ${styles.summaryWrapper}`}>
+          <div className={styles.summary}>{summary}</div>
         </div>
       )}
     </div>

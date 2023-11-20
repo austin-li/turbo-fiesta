@@ -70,6 +70,11 @@
 .inUse {
   color: rgba(0, 0, 0, 0.7);
 }
+.bad {
+  position: absolute;
+  top: 0;
+  right: 5px;
+}
 .dragging {
   position: fixed;
   z-index: 1;
@@ -82,24 +87,30 @@
     cursor: none;
   }
 }
-.gamesWrapper {
+.popup {
   position: absolute;
-  bottom: 100%;
   left: 50%;
-  transform: translateX(-50%) translateY(10px);
   visibility: hidden;
   opacity: 0;
   transition: all 0.2s;
   padding: 5px;
   cursor: default;
 }
-.computerWrapper:not(.dragging):hover .gamesWrapper {
+.gamesWrapper {
+  bottom: 100%;
+  transform: translateX(-50%) translateY(10px);
+}
+.summaryWrapper {
+  top: 100%;
+  transform: translateX(-50%) translateY(-10px);
+}
+.computerWrapper:not(.dragging):hover .popup {
   visibility: visible;
   transform: translateX(-50%);
   opacity: 1;
 }
-.games {
-  white-space: pre;
+.games,
+.summary {
   text-align: center;
   background-color: rgba(255, 255, 255, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -108,9 +119,22 @@
   gap: 5px;
   display: flex;
   flex-direction: column;
-  font-size: 0.8em;
   border-radius: 5px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+.games {
+  white-space: pre;
+  font-size: 0.8em;
+}
+.summary {
+  white-space: pre-wrap;
+  width: max-content;
+  text-align: left;
+  /* hyphens: auto; */
+  max-width: 200px;
+  font-size: 0.7em;
+  max-height: 200px;
+  overflow: auto;
 }
 .gamesHeading {
   text-transform: uppercase;
