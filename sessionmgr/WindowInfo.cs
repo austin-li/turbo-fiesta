@@ -17,6 +17,9 @@ class WindowInfo
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
 
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern int GetWindowModuleFileName(IntPtr hWnd, StringBuilder pszFileName, int cchFileNameMax);
+
     [DllImport("user32.dll")]
     private static extern bool IsWindowVisible(IntPtr hWnd);
 
@@ -52,8 +55,18 @@ class WindowInfo
     private static string? GetWindowText(IntPtr window)
     {
         var title = new StringBuilder(256);
-        if (Win.GetWindowText(window, title, title.Capacity) != 0)
+        if (GetWindowText(window, title, title.Capacity) != 0)
             return title.ToString();
+        return null;
+    }
+
+
+
+    private static string? GetWindowModuleFileName(IntPtr window)
+    {
+        var name = new StringBuilder(256);
+        if (GetWindowModuleFileName(window, name, name.Capacity) != 0)
+            return name.ToString();
         return null;
     }
 
@@ -73,9 +86,8 @@ class WindowInfo
     [DllImport("user32.dll")]
     private static extern IntPtr GetDesktopWindow();
 
-        [DllImport("user32.dll")]
+    [DllImport("user32.dll")]
     private static extern IntPtr GetForegroundWindow();
-
 
 
 
@@ -90,26 +102,29 @@ class WindowInfo
 
     public enum DisplaySignificance { Full, Most, Half, Small, Fractional };
 
-        private static double GetWindowRatio(IntPtr window)
+    private static double? GetWindowRatio(IntPtr window)
     {
         var display = new Rect();
         var app = new Rect();
-        GetClientRect(GetDesktopWindow(), ref display);
-        GetClientRect(window, ref app);
+        if (!GetClientRect(GetDesktopWindow(), ref display))
+            return null;
+        if (!GetClientRect(window, ref app))
+            return null;
 
-        double disp_area = (display.right-display.left) * (display.bottom - display.top);
-        double app_area = (display.right-display.left) * (display.bottom - display.top);
+        double disp_area = (display.right - display.left) * (display.bottom - display.top);
+        double app_area = (app.right - app.left) * (app.bottom - app.top);
 
-        return app_area/disp_area;
+        return app_area / disp_area;
     }
-    private static DisplaySignificance SignificanceAsEnum(double ratio) => ratio switch {
-            (>= 0.8) and (< 1) => DisplaySignificance.Full,
-            (>= 0.65) and (< 0.8) => DisplaySignificance.Most,
-            (>= 0.35) and (< 0.65) => DisplaySignificance.Half,
-            (>= 0.15) and (< 0.35) => DisplaySignificance.Small,
-            < 0.15 => DisplaySignificance.Fractional,
-            _  => DisplaySignificance.Fractional
-        };
+    private static DisplaySignificance SignificanceAsEnum(double ratio) => ratio switch
+    {
+        (>= 0.8) and (<= 1) => DisplaySignificance.Full,
+        (>= 0.65) and (< 0.8) => DisplaySignificance.Most,
+        (>= 0.35) and (< 0.65) => DisplaySignificance.Half,
+        (>= 0.15) and (< 0.35) => DisplaySignificance.Small,
+        < 0.15 => DisplaySignificance.Fractional,
+        _ => DisplaySignificance.Fractional
+    };
 
 
     public readonly DisplaySignificance displaySignificance;
@@ -117,69 +132,93 @@ class WindowInfo
     public readonly string title;
     public readonly IntPtr handle;
     public readonly double displayRatio;
+    public readonly string path;
 
-    private WindowInfo(string title, Presence presence, DisplaySignificance significance, IntPtr handle, double ratio)
+    private WindowInfo(string title, Presence presence, DisplaySignificance significance, IntPtr handle, double ratio, string path)
     {
         this.title = title;
         this.displayPresence = presence;
         this.displaySignificance = significance;
         this.handle = handle;
         this.displayRatio = ratio;
+        this.path = path;
     }
 
 
-    // Return Present or hidden windows.
+    public override string ToString()
+    {
+        var presence = displayPresence switch
+        {
+            Presence.Foreground => "in focus ",
+            Presence.Present => "open ",
+            Presence.Minimized => "minimized",
+            Presence.Hidden => "hidden"
+        };
+
+        if (displayPresence == Presence.Foreground || displayPresence == Presence.Present)
+        {
+            presence += displaySignificance switch
+            {
+                DisplaySignificance.Full => "taking full screen",
+                DisplaySignificance.Most => "taking up most of the screen",
+                DisplaySignificance.Half => "taking up half the screen",
+                DisplaySignificance.Small => "",
+                DisplaySignificance.Fractional => "taking up very little of the screen"
+            };
+        }
+
+        return String.Format("- {0}, {1}", title, presence);
+    }
 
     private static WindowInfo? AssembleInfo(IntPtr wnd)
     {
         string? title = GetWindowText(wnd);
-        if(title == null) return null;
-        var presence = GetWindowPresence(wnd);
-        var ratio = GetWindowRatio(wnd);
-        var significance = SignificanceAsEnum(ratio);
 
-        return new WindowInfo(title, presence, significance, wnd, ratio);
+        if (title is null) return null;
+        var presence = GetWindowPresence(wnd);
+
+        var ratio = GetWindowRatio(wnd);
+        if (ratio is null)
+            return null;
+        var significance = SignificanceAsEnum((double)ratio);
+        string? path = GetWindowModuleFileName(wnd);
+        if (path is null)
+            path = "";
+
+        return new WindowInfo((string)title, presence, significance, wnd, (double)ratio, path);
     }
+
     public static List<WindowInfo> GetWindows()
     {
-        var allWindows = new List<IntPtr>();
+        var allWindows = new HashSet<IntPtr>();
         var parents = EnumWindows();
-        foreach(IntPtr w in parents) {
+        foreach (IntPtr w in parents)
+        {
             allWindows.Add(w);
             allWindows.Concat(EnumChildWindows(w));
         }
-
         var allInfos = new List<WindowInfo>();
 
-        foreach(IntPtr w in allWindows) {
-            allInfos.Add(AssembleInfo(w));
+        foreach (IntPtr w in allWindows)
+        {
+            var info = AssembleInfo(w);
+            if (info is not null) allInfos.Add(info);
         }
 
         return allInfos;
     }
 
-    public static List<WindowInfo> GetWindowInfos()
-    {
-        var allWindows = new List<IntPtr>();
-        var parents = EnumWindows();
-        foreach(IntPtr w in parents) {
-            allWindows.Add(w);
-            //allWindows.Concat(EnumChildWindows(w));
-        }
-
-        var allInfos = new List<WindowInfo>();
-
-        foreach(IntPtr w in allWindows) {
-            allInfos.Add(AssembleInfo(w));
-        }
-
-        return allInfos;
-    }
-
-     public static List<WindowInfo> GetMajorWindows()
+    public static List<WindowInfo> GetMajorWindows()
     {
 
-        var windows = GetWindowInfos().Where(w => w.displayPresence != Presence.Hidden).OrderBy(w => 1.0 - w.displayRatio).DistinctBy(w => w.title).ToList();
+        var windows = GetWindows()
+            .Where(w => w.displayPresence != Presence.Hidden)
+            .Where(w => !w.path.Contains("C:\\Windows\\System32"))
+            .Where(w => !w.title.Contains("sessionmgr"))
+            .OrderBy(w => 1.0 - w.displayRatio)
+            .DistinctBy(w => w.handle)
+            .DistinctBy(w => w.title)
+            .ToList();
 
 
         return (List<WindowInfo>)windows;
