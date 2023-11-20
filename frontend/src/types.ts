@@ -11,3 +11,6 @@ export type Label = {
   colEnd: number;
   content: string;
 };
+
+export const WIDTH = 90;
+export const HEIGHT = 60;

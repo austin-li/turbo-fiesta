@@ -23,11 +23,6 @@ for (let i = 0; i < 4; i++) {
     col: 7,
   });
 }
-computers.push({
-  id: `hello`,
-  row: 0,
-  col: 7,
-});
 
 const root = createRoot(document.getElementById("root")!);
 root.render(

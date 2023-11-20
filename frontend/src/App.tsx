@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ComputerBox } from "./components/ComputerBox";
 import styles from "./styles.module.css";
-import { Computer, Label } from "./types";
+import { Computer, HEIGHT, Label, WIDTH } from "./types";
 import { LabelBox } from "./components/LabelBox";
 
 // https://stackoverflow.com/a/70398145
@@ -69,7 +69,23 @@ export function App({ initComputers = [] }: AppProps) {
           "--cols": cols,
         }}
         onDoubleClick={(e) => {
+          if (e.target !== e.currentTarget) {
+            return;
+          }
           e.preventDefault();
+          const rect = e.currentTarget.getBoundingClientRect();
+          const row = Math.floor((e.clientY - rect.top) / HEIGHT);
+          const col = Math.floor((e.clientX - rect.left) / WIDTH);
+          if (
+            !computers.find(
+              (computer) => computer.row === row && computer.col === col
+            )
+          ) {
+            setComputers([
+              ...computers,
+              { row, col, id: `PC ${computers.length + 1}` },
+            ]);
+          }
         }}
       >
         {computers.map(({ row, col, id }, i) => {
@@ -77,6 +93,9 @@ export function App({ initComputers = [] }: AppProps) {
           return (
             <ComputerBox
               name={id}
+              onRename={(name) => {
+                setComputers(computers.with(i, { row, col, id: name }));
+              }}
               onDrop={(newRow, newCol) => {
                 if (
                   newRow < 0 ||

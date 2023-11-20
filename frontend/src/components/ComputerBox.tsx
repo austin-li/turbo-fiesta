@@ -1,5 +1,6 @@
 import { CSSProperties, PointerEvent, useRef, useState } from "react";
 import styles from "../styles.module.css";
+import { HEIGHT, WIDTH } from "../types";
 
 export type Status =
   | { type: "offline" }
@@ -9,12 +10,16 @@ export type Status =
 type DragState = {
   pointerId: number;
   rect: DOMRect;
+  dragging: boolean;
+  initX: number;
+  initY: number;
   offsetX: number;
   offsetY: number;
 };
 
 export type ComputerBoxProps = {
   name: string;
+  onRename: (name: string) => void;
   onDrop: (row: number, col: number) => void;
   status: Status;
   games: string[];
@@ -25,6 +30,7 @@ export type ComputerBoxProps = {
 
 export function ComputerBox({
   name,
+  onRename,
   onDrop,
   status,
   games,
@@ -36,11 +42,17 @@ export function ComputerBox({
   const [dragging, setDragging] = useState(false);
 
   const handlePointerDown = (e: PointerEvent<HTMLDivElement>) => {
+    if (e.target instanceof HTMLInputElement) {
+      return;
+    }
     if (!dragState.current) {
       const rect = e.currentTarget.getBoundingClientRect();
       dragState.current = {
         pointerId: e.pointerId,
         rect,
+        dragging: true,
+        initX: e.clientX,
+        initY: e.clientY,
         offsetX: e.clientX - rect.left,
         offsetY: e.clientY - rect.top,
       };
@@ -56,12 +68,17 @@ export function ComputerBox({
       return;
     }
     if (dragState.current?.pointerId === e.pointerId) {
-      e.currentTarget.parentElement.style.left = `${
-        e.clientX - dragState.current.offsetX
-      }px`;
-      e.currentTarget.parentElement.style.top = `${
-        e.clientY - dragState.current.offsetY
-      }px`;
+      // if (!dragState.current.dragging) {
+      //   if (Math.hypot(e.clientX - e.initX));
+      // }
+      if (dragState.current.dragging) {
+        e.currentTarget.parentElement.style.left = `${
+          e.clientX - dragState.current.offsetX
+        }px`;
+        e.currentTarget.parentElement.style.top = `${
+          e.clientY - dragState.current.offsetY
+        }px`;
+      }
     }
   };
   const handlePointerEnd = (e: PointerEvent<HTMLDivElement>) => {
@@ -88,10 +105,12 @@ export function ComputerBox({
       }
       onDrop(
         Math.floor(
-          (e.clientY - state.offsetY + state.rect.height / 2 - parent.top) / 60
+          (e.clientY - state.offsetY + state.rect.height / 2 - parent.top) /
+            HEIGHT
         ),
         Math.floor(
-          (e.clientX - state.offsetX + state.rect.width / 2 - parent.left) / 90
+          (e.clientX - state.offsetX + state.rect.width / 2 - parent.left) /
+            WIDTH
         )
       );
     }
@@ -109,7 +128,12 @@ export function ComputerBox({
         onPointerUp={handlePointerEnd}
         onPointerCancel={handlePointerEnd}
       >
-        <div className={styles.name}>{name}</div>
+        <input
+          className={styles.name}
+          value={name}
+          onChange={(e) => onRename(e.currentTarget.value)}
+          disabled={dragging}
+        />
         <div
           className={`${styles.status} ${
             status.type === "used" ? styles.inUse : ""
