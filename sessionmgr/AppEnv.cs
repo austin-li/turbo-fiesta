@@ -8,9 +8,11 @@ class AppEnv
     public int Interval {get; set;}
     public bool Debug {get; set;}
 
+    public AppEnv(){}
+
     public static AppEnv MakeFromLocalEnv()
     {
-        string path = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+        string path = System.IO.Directory.GetCurrentDirectory();
         var env = JsonSerializer.Deserialize<AppEnv>(File.ReadAllText(path + "\\.env.json"));
         return env;
     }

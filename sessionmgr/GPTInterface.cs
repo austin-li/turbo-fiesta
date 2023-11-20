@@ -7,8 +7,6 @@ class GPTInterface
     This summary should be a sentence per notable process, including a sentence describing why the user is using the app . Prioritize games. Mention how much screen estate an app is using. If a process contains prohibited content (like a cryptocurrency miner or pornography), include an additional sentence warning and tag it <PROHIBITED>.
     Games, game stores, and code editors are accepted content and should not be marked.";
 
-
-
     public GPTInterface(string secret)
     {
         client = new OpenAIClient(secret);
@@ -21,6 +19,8 @@ class GPTInterface
         {
             prompt += info.ToString() + "\n";
         }
+
+        if(AppEnv.Default.Debug) Console.WriteLine(prompt);
 
         return prompt;
     }
