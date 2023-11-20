@@ -11,12 +11,16 @@ declare module "react" {
   }
 }
 
-type Message = {
+type ComputersMessage = {
   [seat: string]: {
     idle_count: number;
     use_count: number;
     games: string[];
   };
+};
+type Message = {
+  computers: ComputersMessage;
+  queue: {}[];
 };
 
 const WS_URL = `ws://${window.location.hostname}:3000/`;
@@ -28,7 +32,9 @@ export function App({ initComputers = [] }: AppProps) {
   const [rows, setRows] = useState(9);
   const [cols, setCols] = useState(8);
   const [computers, setComputers] = useState(initComputers);
-  const [computerStatuses, setComputerStatuses] = useState<Message>({});
+  const [computerStatuses, setComputerStatuses] = useState<ComputersMessage>(
+    {}
+  );
 
   const [labelTop, setLabelTop] = useState("Garage");
   const [labelBottom, setLabelBottom] = useState("Cafe");
@@ -40,7 +46,8 @@ export function App({ initComputers = [] }: AppProps) {
     function connect() {
       ws = new WebSocket(WS_URL);
       ws.addEventListener("message", (e) => {
-        setComputerStatuses(JSON.parse(e.data));
+        const { computers, queue }: Message = JSON.parse(e.data);
+        setComputerStatuses(computers);
       });
       ws.addEventListener("close", connect);
     }
@@ -59,6 +66,9 @@ export function App({ initComputers = [] }: AppProps) {
         style={{
           "--rows": rows,
           "--cols": cols,
+        }}
+        onDoubleClick={(e) => {
+          e.preventDefault();
         }}
       >
         {computers.map(({ row, col, id }, i) => {

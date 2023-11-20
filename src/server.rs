@@ -28,21 +28,37 @@ struct ServerInfo {
     games: BTreeSet<String>,
     response: String,
 }
+
+static NEXT_ID: AtomicUsize = AtomicUsize::new(1);
+
+#[derive(Serialize, Debug)]
+struct QueueEntry {
+    serial_num: String,
+    id: usize,
+}
+
+#[derive(Serialize, Debug, Default)]
+struct State {
+    computers: HashMap<String, ServerInfo>,
+    queue: VecDeque<QueueEntry>,
+}
+
 fn main() {
     println!("Starting server");
-    let comps: Arc<Mutex<HashMap<String, ServerInfo>>> = Arc::new(Mutex::new(HashMap::new()));
+    let comps: Arc<Mutex<State>> = Arc::new(Mutex::new(State::default()));
     let test = Arc::clone(&comps);
     spawn(move || {
         let server = TcpListener::bind("0.0.0.0:3000").unwrap();
         for stream in server.incoming() {
             let comps = Arc::clone(&test);
             spawn(move || {
-                println!("accepted");
+                println!("Someone connected on 3000");
                 let mut websocket = accept(stream.unwrap()).unwrap();
                 loop {
                     let msg = serde_json::to_string(&comps).unwrap();
-                    println!("{msg}");
-                    if let Err(_) = websocket.send(msg.into()) {
+                    // println!("{msg}");
+                    if let Err(err) = websocket.send(msg.into()) {
+                        eprintln!("3000 disconnected: {err}");
                         break;
                     };
                     sleep(Duration::from_secs(1));
@@ -55,16 +71,26 @@ fn main() {
     for stream in computers.incoming() {
         let comps = Arc::clone(&comps);
         spawn(move || {
-            println!("thread started");
+            println!("Someone connected on 3001");
             let mut websocket = accept(stream.unwrap()).unwrap();
             loop {
                 match websocket.read() {
                     Ok(msg) => {
-                        let info: ClientInfo = serde_json::from_str(&msg.to_string()).unwrap();
+                        let info = match serde_json::from_str::<ClientInfo>(&msg.to_string()) {
+                            Ok(info) => info,
+                            Err(err) => {
+                                eprintln!("tragic parsing error: {err:?}");
+                                continue;
+                            }
+                        };
                         let mut comps = comps.lock().unwrap();
                         match info {
+                            RustInfo { .. } => {}
+                            _ => println!("{info:?}"),
+                        };
+                        match info {
                             RustInfo { comp, idle, games } => {
-                                let comp = comps.entry(comp).or_insert(ServerInfo {
+                                let comp = comps.computers.entry(comp).or_insert(ServerInfo {
                                     idle_count: 0,
                                     use_count: 0,
                                     games: BTreeSet::new(),
@@ -80,7 +106,7 @@ fn main() {
                                 comp.games = games;
                             }
                             CsInfo { comp, response } => {
-                                let comp = comps.entry(comp).or_insert(ServerInfo {
+                                let comp = comps.computers.entry(comp).or_insert(ServerInfo {
                                     idle_count: 0,
                                     use_count: 0,
                                     games: BTreeSet::new(),
@@ -88,10 +114,17 @@ fn main() {
                                 });
                                 comp.response = response;
                             }
+                            TapCard { serial_num } => comps.queue.push_front(QueueEntry {
+                                serial_num,
+                                id: NEXT_ID.fetch_add(1, Ordering::Relaxed),
+                            }),
+                            OffQueue => {
+                                let _ = comps.queue.pop_back();
+                            }
                         }
                     }
                     Err(err) => {
-                        println!("{err}");
+                        eprintln!("3001 disconnected: {err}");
                         break;
                     }
                 }

@@ -15,4 +15,8 @@ pub enum ClientInfo {
         comp: String,
         response: String,
     },
+    TapCard {
+        serial_num: String,
+    },
+    OffQueue,
 }
