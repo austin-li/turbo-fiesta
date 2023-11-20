@@ -38,9 +38,9 @@ path = "src/comp.rs"
 name = "enum"
 path = "src/enum.rs"
 
-[[bin]]
-name = "serve"
-path = "src/serve.rs"
+# [[bin]]
+# name = "serve"
+# path = "src/serve.rs"
 
 # [[bin]]
 # name = "rearend"

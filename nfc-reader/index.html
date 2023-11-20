@@ -15,8 +15,8 @@
     <p>Please tap your card!</p>
     <button id="scan">start scanning</button>
     <script>
-      const rx = new WebSocket(`ws://${window.location.hostname}:3000/`);
-      const tx = new WebSocket(`ws://${window.location.hostname}:3001/`);
+      // const rx = new WebSocket(`ws://${window.location.hostname}:3000/`);
+      // const tx = new WebSocket(`ws://${window.location.hostname}:3001/`);
       let reader;
       try {
         reader = new NDEFReader();
