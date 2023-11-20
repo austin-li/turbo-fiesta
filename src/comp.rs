@@ -1,11 +1,26 @@
-use device_query::{DeviceQuery, DeviceState, MouseState};
-use std::collections::BTreeSet;
-use std::{env::args, net::TcpStream, thread::sleep, time::Duration};
-use tungstenite::connect;
-use tungstenite::{stream::MaybeTlsStream, WebSocket};
+use device_query::{
+    DeviceQuery,
+    DeviceState,
+    MouseState,
+};
+use std::{
+    collections::BTreeSet,
+    env::args,
+    net::TcpStream,
+    thread::sleep,
+    time::Duration,
+};
+use tungstenite::{
+    connect,
+    stream::MaybeTlsStream,
+    WebSocket,
+};
 use turbo_fiesta::info::ClientInfo;
 use url::Url;
-use windows_sys::{Win32::Foundation::*, Win32::UI::WindowsAndMessaging::*};
+use windows_sys::Win32::{
+    Foundation::*,
+    UI::WindowsAndMessaging::*,
+};
 
 static mut V: Vec<String> = Vec::new();
 

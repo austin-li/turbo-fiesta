@@ -1,6 +1,9 @@
 // https://github.com/microsoft/windows-rs/blob/0.52.0/crates/samples/windows-sys/enum_windows/src/main.rs
 
-use windows_sys::{Win32::Foundation::*, Win32::UI::WindowsAndMessaging::*};
+use windows_sys::Win32::{
+    Foundation::*,
+    UI::WindowsAndMessaging::*,
+};
 
 static mut V: Vec<String> = Vec::new();
 fn main() {

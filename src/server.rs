@@ -1,12 +1,25 @@
 use serde::Serialize;
-use std::collections::BTreeSet;
-use std::collections::HashMap;
-use std::net::TcpListener;
-use std::sync::{Arc, Mutex};
-use std::thread::{sleep, spawn};
-use std::time::Duration;
+use std::{
+    collections::{
+        BTreeSet,
+        HashMap,
+    },
+    net::TcpListener,
+    sync::{
+        Arc,
+        Mutex,
+    },
+    thread::{
+        sleep,
+        spawn,
+    },
+    time::Duration,
+};
 use tungstenite::accept;
-use turbo_fiesta::info::{ClientInfo, ClientInfo::*};
+use turbo_fiesta::info::{
+    ClientInfo,
+    ClientInfo::*,
+};
 
 #[derive(Serialize, Debug)]
 struct ServerInfo {
