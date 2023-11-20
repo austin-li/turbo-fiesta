@@ -1,10 +1,5 @@
-use serde::Serialize;
 use std::{
-    collections::{
-        BTreeSet,
-        HashMap,
-        VecDeque,
-    },
+    collections::BTreeSet,
     net::TcpListener,
     sync::{
         atomic::{
@@ -24,29 +19,12 @@ use tungstenite::accept;
 use turbo_fiesta::info::{
     ClientInfo,
     ClientInfo::*,
+    QueueEntry,
+    ServerInfo,
+    State,
 };
 
-#[derive(Serialize, Debug)]
-struct ServerInfo {
-    idle_count: i32,
-    use_count: i32,
-    games: BTreeSet<String>,
-    response: String,
-}
-
 static NEXT_ID: AtomicUsize = AtomicUsize::new(1);
-
-#[derive(Serialize, Debug)]
-struct QueueEntry {
-    serial_num: String,
-    id: usize,
-}
-
-#[derive(Serialize, Debug, Default)]
-struct State {
-    computers: HashMap<String, ServerInfo>,
-    queue: VecDeque<QueueEntry>,
-}
 
 fn main() {
     println!("Starting server");

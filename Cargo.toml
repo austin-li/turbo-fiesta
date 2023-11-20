@@ -11,13 +11,16 @@ serde = { version = "1.0.192", features = ["derive", "rc"] }
 serde_json = "1.0.108"
 tungstenite = "0.20.1"
 url = "2.4.1"
+tokio = { version = "1", features = ["full"] }
+warp = "0.3"
+tokio-stream = { version = "0.1.1", features = ["net"] }
+futures-util = { version = "0.3", default-features = false, features = [
+    "sink",
+] }
 
 [dependencies.windows-sys]
 version = "0.52.0"
-features = [
-    "Win32_Foundation",
-    "Win32_UI_WindowsAndMessaging",
-]
+features = ["Win32_Foundation", "Win32_UI_WindowsAndMessaging"]
 
 [[bin]]
 name = "client"
@@ -34,3 +37,11 @@ path = "src/comp.rs"
 [[bin]]
 name = "enum"
 path = "src/enum.rs"
+
+[[bin]]
+name = "serve"
+path = "src/serve.rs"
+
+# [[bin]]
+# name = "rearend"
+# path = "src/rearend.rs"
