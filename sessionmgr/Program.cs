@@ -7,8 +7,12 @@ class Program
     public static void Main()
     {
         var windows = WindowInfo.GetMajorWindows();
-        foreach (var w in windows)
-            Console.WriteLine(w);
+        var gpt = new GPTInterface(AppEnv.Default.OpenAISecret);
+        var summaryObject = gpt.summarize(windows);
+        var summary = summaryObject.GetAwaiter().GetResult();
         
+        var ws = new WSClient(AppEnv.Default.HostServer);
+        ws.Connect().Wait();
+        ws.SendSummary("A1", summary).Wait();
     }
 }

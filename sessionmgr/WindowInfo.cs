@@ -157,7 +157,8 @@ class WindowInfo
 
         if (displayPresence == Presence.Foreground || displayPresence == Presence.Present)
         {
-            presence += displaySignificance switch {
+            presence += displaySignificance switch
+            {
                 DisplaySignificance.Full => "taking full screen",
                 DisplaySignificance.Most => "taking up most of the screen",
                 DisplaySignificance.Half => "taking up half the screen",
@@ -205,7 +206,7 @@ class WindowInfo
         }
 
         return allInfos;
-}
+    }
 
     public static List<WindowInfo> GetMajorWindows()
     {
@@ -213,6 +214,7 @@ class WindowInfo
         var windows = GetWindows()
             .Where(w => w.displayPresence != Presence.Hidden)
             .Where(w => !w.path.Contains("C:\\Windows\\System32"))
+            .Where(w => !w.title.Contains("sessionmgr"))
             .OrderBy(w => 1.0 - w.displayRatio)
             .DistinctBy(w => w.handle)
             .DistinctBy(w => w.title)

@@ -7,6 +7,7 @@
     <Nullable>enable</Nullable>
     <PublishAot>true</PublishAot>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +20,7 @@
   </Target>
 
   <Target Name="AddPayloadsFolder" AfterTargets="Publish">
-    <Copy SourceFiles="@(EnvData)" DestinationFolder="$(TargetDir)" />
+    <Copy SourceFiles="@(EnvData)" DestinationFolder="$(PublishDir)" />
   </Target>
 
 </Project>
