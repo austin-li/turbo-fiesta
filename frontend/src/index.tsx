@@ -10,17 +10,19 @@ for (let i = 0; i < 4; i++) {
   const row = 7 - i * 2;
   for (let j = 0; j < (i < 2 ? 5 : 6); j++) {
     computers.push({
-      id: `${String.fromCodePoint(A + i)}${j + 1}`,
+      name: `${String.fromCodePoint(A + i)}${j + 1}`,
       row,
       col: j,
+      id: Math.random(),
     });
   }
 }
 for (let i = 0; i < 4; i++) {
   computers.push({
-    id: `E${i + 1}`,
+    name: `E${i + 1}`,
     row: 7 - i * 2,
     col: 7,
+    id: Math.random(),
   });
 }
 

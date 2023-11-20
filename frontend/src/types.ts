@@ -1,5 +1,6 @@
 export type Computer = {
-  id: string;
+  id: number;
+  name: string;
   row: number;
   col: number;
 };

@@ -83,18 +83,23 @@ export function App({ initComputers = [] }: AppProps) {
           ) {
             setComputers([
               ...computers,
-              { row, col, id: `PC ${computers.length + 1}` },
+              {
+                row,
+                col,
+                name: `PC ${computers.length + 1}`,
+                id: Math.random(),
+              },
             ]);
           }
         }}
       >
-        {computers.map(({ row, col, id }, i) => {
-          const status = computerStatuses[id];
+        {computers.map(({ row, col, name, id }, i) => {
+          const status = computerStatuses[name];
           return (
             <ComputerBox
-              name={id}
+              name={name}
               onRename={(name) => {
-                setComputers(computers.with(i, { row, col, id: name }));
+                setComputers(computers.with(i, { row, col, name, id }));
               }}
               onDrop={(newRow, newCol) => {
                 if (
@@ -109,10 +114,10 @@ export function App({ initComputers = [] }: AppProps) {
                 setComputers(
                   computers.map((computer, index) =>
                     index === i
-                      ? { row: newRow, col: newCol, id }
+                      ? { row: newRow, col: newCol, name, id }
                       : // Swap with existing computer
                         computer.row === newRow && computer.col === newCol
-                        ? { row, col, id: computer.id }
+                        ? { row, col, name: computer.name, id }
                         : computer
                   )
                 );
