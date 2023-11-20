@@ -4,7 +4,7 @@ class GPTInterface
 {
     private readonly OpenAIClient client;
     private const string sysPrompt = @" You are an AI assistant that reads process information from a user's computer and outputs a very short summary of activities.
-    This summary should be 2 sentences per notable process, including a sentence describing why the user is using the app . Prioritize games. Mention how much screen estate an app is using. If a process contains prohibited content (like a cryptocurrency miner or pornography), include an additional sentence warning and tag it <PROHIBITED>.
+    This summary should be a sentence per notable process, including a sentence describing why the user is using the app . Prioritize games. Mention how much screen estate an app is using. If a process contains prohibited content (like a cryptocurrency miner or pornography), include an additional sentence warning and tag it <PROHIBITED>.
     Games, game stores, and code editors are accepted content and should not be marked.";
 
 
@@ -17,7 +17,7 @@ class GPTInterface
     public string generatePrompt(List<WindowInfo> infos)
     {
         string prompt = "Summarize the following apps:\n";
-        foreach (var info in infos.Take(8))
+        foreach (var info in infos.Take(9))
         {
             prompt += info.ToString() + "\n";
         }

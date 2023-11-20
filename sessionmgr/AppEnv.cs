@@ -5,6 +5,8 @@ class AppEnv
 {
     public string OpenAISecret { get; set; }
     public string HostServer { get; set; }
+    public int Interval {get; set;}
+    public bool Debug {get; set;}
 
     public static AppEnv MakeFromLocalEnv()
     {

@@ -17,6 +17,7 @@ class WSClient
     public async Task Connect()
     {
         await sock.ConnectAsync(uri, default);
+        Console.WriteLine("Connected to server.");
     }
 
     public class TransferrableState
@@ -49,15 +50,16 @@ class WSClient
     }
     public async Task Send(ReadOnlyMemory<byte> data)
     {
-        await sock.SendAsync(data, WebSocketMessageType.Text, WebSocketMessageFlags.None, default);
+        await sock.SendAsync(data, WebSocketMessageType.Text, WebSocketMessageFlags.EndOfMessage, default);
     }
 
     public async Task SendSummary(string comp, string summary)
     {
         var json = MakeJson(comp, summary);
         var buffer = MakeTransitBuffer(json);
-        Console.WriteLine("Sending data\n" + json);
+        if(AppEnv.Default.Debug) Console.WriteLine("Sending:\n" + json);
         await Send(buffer);
+        if(AppEnv.Default.Debug) Console.WriteLine("Sent.");
     }
 
 
