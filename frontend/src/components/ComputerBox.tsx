@@ -150,7 +150,7 @@ export function ComputerBox({
       {games.length > 0 && (
         <div className={`${styles.popup} ${styles.gamesWrapper}`}>
           <div className={styles.games}>
-            <h2 className={styles.gamesHeading}>Games</h2>
+            <h3 className={styles.gamesHeading}>Games</h3>
             {games.map((game) => (
               <div className={styles.game} key={game}>
                 {game}

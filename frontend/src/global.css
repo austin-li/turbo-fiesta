@@ -13,18 +13,19 @@ body {
 
 #root {
   display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 #title {
   font-weight: bold;
-  margin: 0;
+  margin: auto;
+  text-align: center;
   position: fixed;
   z-index: -1;
-  left: 0;
-  bottom: -20px;
-  font-size: 200px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-size: 50vh;
   line-height: 0.8;
   color: rgba(255, 255, 255, 0.1);
 }
